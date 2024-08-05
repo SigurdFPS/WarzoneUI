@@ -38,6 +38,7 @@ def delete_loadout(loadout_id):
 def get_loadouts():
     return jsonify(loadouts)
     @app.route('/twitch_auth')
+    
 def twitch_auth():
     code = request.args.get('code')
     if not code:
