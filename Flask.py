@@ -1,26 +1,27 @@
-from flask import Flask, request, jsonify
-import json
+from flask import Flask, request, jsonify, redirect
+import requests
 
 app = Flask(__name__)
 
-loadouts = {}
+CLIENT_ID = '3kfv655d9opnjgj3wf02t0i05x5v80'
+CLIENT_SECRET = 'O0erF/m/23WjogQtCVFnfrtuQS7syaT2HE9SpBEE2DM='
+REDIRECT_URI = 'https://3kfv655d9opnjgj3wf02t0i05x5v80.ext-twitch.tv/'
 
-@app.route('/create_loadout', methods=['POST'])
-def create_loadout():
-    data = request.json
-    loadout_id = len(loadouts) + 1
-    loadouts[loadout_id] = data
-    return jsonify({'loadout_id': loadout_id, 'status': 'success'})
-
-@app.route('/get_loadouts', methods=['GET'])
-def get_loadouts():
-    return jsonify(loadouts)
-
-@app.route('/twitch_auth', methods=['POST'])
+@app.route('/twitch_auth')
 def twitch_auth():
-    data = request.json
-    # Handle Twitch authentication here
-    return jsonify({'status': 'success'})
+    code = request.args.get('code')
+    if not code:
+        return 'Missing code', 400
+    token_url = 'https://id.twitch.tv/oauth2/token'
+    params = {
+        'client_id': CLIENT_ID,
+        'client_secret': CLIENT_SECRET,
+        'code': code,
+        'grant_type': 'authorization_code',
+        'redirect_uri': REDIRECT_URI
+    }
+    response = requests.post(token_url, params=params)
+    return jsonify(response.json())
 
 if __name__ == '__main__':
-    app.run(debug=True, ssl_context='adhoc')
+    app.run(debug=True)
