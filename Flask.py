@@ -1,9 +1,8 @@
 from flask import Flask, request, jsonify
 import json
 
-app = Flask(WarzoneUI)
+app = Flask(__name__)
 
-# In-memory storage for loadouts
 loadouts = {}
 
 @app.route('/create_loadout', methods=['POST'])
@@ -17,5 +16,11 @@ def create_loadout():
 def get_loadouts():
     return jsonify(loadouts)
 
+@app.route('/twitch_auth', methods=['POST'])
+def twitch_auth():
+    data = request.json
+    # Handle Twitch authentication here
+    return jsonify({'status': 'success'})
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, ssl_context='adhoc')
