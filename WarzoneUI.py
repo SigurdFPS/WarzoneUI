@@ -7,9 +7,6 @@ CLIENT_ID = '3kfv655d9opnjgj3wf02t0i05x5v80'
 CLIENT_SECRET = 'O0erF/m/23WjogQtCVFnfrtuQS7syaT2HE9SpBEE2DM='
 REDIRECT_URI = 'https://3kfv655d9opnjgj3wf02t0i05x5v80.ext-twitch.tv/'
 
-if __name__ == '__main__':
-    app.run(debug=True)
-    
 loadouts = {}
 
 @app.route('/create_loadout', methods=['POST'])
@@ -37,8 +34,8 @@ def delete_loadout(loadout_id):
 @app.route('/get_loadouts', methods=['GET'])
 def get_loadouts():
     return jsonify(loadouts)
-    @app.route('/twitch_auth')
-    
+
+@app.route('/twitch_auth')
 def twitch_auth():
     code = request.args.get('code')
     if not code:
