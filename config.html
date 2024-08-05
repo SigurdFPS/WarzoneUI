@@ -46,7 +46,7 @@
             <select id="perk3">
                 <!-- Options will be populated by JavaScript -->
             </select>
-            <img id="perk3Image" src="" alt="Perk 2" style="display: none;">
+            <img id="perk3Image" src="" alt="Perk 3" style="display: none;">
 
             <label for="perk4">Perk 4:</label>
             <select id="perk4">
@@ -61,9 +61,9 @@
     <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
     <script>
         /* ADD YOUR API LINKS HERE */
-        const API_URL = 'https://6pqwykrem4.execute-api.us-east-2.amazonaws.com/prod';
-        const GUNS_API_URL = `${https://0fu27m7lw8.execute-api.us-east-1.amazonaws.com/prod}/guns`;
-        const PERKS_API_URL = `${https://834j6zn56c.execute-api.us-east-1.amazonaws.com/prod}/perks`;
+        const API_URL = 'https://4e9qctdfyg.execute-api.us-east-1.amazonaws.com/prod';
+        const GUNS_API_URL = `${API_URL}/guns`;
+        const PERKS_API_URL = `${API_URL}/perks`;
 
         async function fetchData(url) {
             const response = await fetch(url);
@@ -101,6 +101,7 @@
                 populateSelect('perk1', perks);
                 populateSelect('perk2', perks);
                 populateSelect('perk3', perks);
+                populateSelect('perk4', perks);
 
                 document.getElementById('loadoutForm').addEventListener('submit', function(event) {
                     event.preventDefault();
@@ -112,7 +113,8 @@
                         perks: [
                             { name: document.getElementById('perk1').options[document.getElementById('perk1').selectedIndex].text, image: document.getElementById('perk1Image').src },
                             { name: document.getElementById('perk2').options[document.getElementById('perk2').selectedIndex].text, image: document.getElementById('perk2Image').src },
-                            { name: document.getElementById('perk3').options[document.getElementById('perk3').selectedIndex].text, image: document.getElementById('perk3Image').src }
+                            { name: document.getElementById('perk3').options[document.getElementById('perk3').selectedIndex].text, image: document.getElementById('perk3Image').src },
+                            { name: document.getElementById('perk4').options[document.getElementById('perk4').selectedIndex].text, image: document.getElementById('perk4Image').src }
                         ]
                     };
                     fetch(`${API_URL}/create_loadout`, {
@@ -178,6 +180,9 @@
                     document.getElementById('perk3').value = loadout.perks[2].name;
                     document.getElementById('perk3Image').src = perks[loadout.perks[2].name] || '';
                     document.getElementById('perk3Image').style.display = 'block';
+                    document.getElementById('perk4').value = loadout.perks[3].name;
+                    document.getElementById('perk4Image').src = perks[loadout.perks[3].name] || '';
+                    document.getElementById('perk4Image').style.display = 'block';
 
                     document.getElementById('loadoutForm').onsubmit = function(event) {
                         event.preventDefault();
