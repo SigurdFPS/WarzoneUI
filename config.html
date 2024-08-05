@@ -36,12 +36,6 @@
             </select>
             <img id="perk1Image" src="" alt="Perk 1" style="display: none;">
             
-            <label for="perk1">Perk 1:</label>
-            <select id="perk1">
-                <!-- Options will be populated by JavaScript -->
-            </select>
-            <img id="perk1Image" src="" alt="Perk 1" style="display: none;">
-
             <label for="perk2">Perk 2:</label>
             <select id="perk2">
                 <!-- Options will be populated by JavaScript -->
@@ -52,7 +46,13 @@
             <select id="perk3">
                 <!-- Options will be populated by JavaScript -->
             </select>
-            <img id="perk3Image" src="" alt="Perk 3" style="display: none;">
+            <img id="perk3Image" src="" alt="Perk 2" style="display: none;">
+
+            <label for="perk4">Perk 4:</label>
+            <select id="perk4">
+                <!-- Options will be populated by JavaScript -->
+            </select>
+            <img id="perk4Image" src="" alt="Perk 4" style="display: none;">
 
             <button type="submit">Create Loadout</button>
         </form>
@@ -189,7 +189,8 @@
                             perks: [
                                 { name: document.getElementById('perk1').options[document.getElementById('perk1').selectedIndex].text, image: document.getElementById('perk1Image').src },
                                 { name: document.getElementById('perk2').options[document.getElementById('perk2').selectedIndex].text, image: document.getElementById('perk2Image').src },
-                                { name: document.getElementById('perk3').options[document.getElementById('perk3').selectedIndex].text, image: document.getElementById('perk3Image').src }
+                                { name: document.getElementById('perk3').options[document.getElementById('perk3').selectedIndex].text, image: document.getElementById('perk3Image').src },
+                                { name: document.getElementById('perk4').options[document.getElementById('perk4').selectedIndex].text, image: document.getElementById('perk4Image').src }
                             ]
                         };
                         fetch(`${API_URL}/update_loadout/${id}`, {
