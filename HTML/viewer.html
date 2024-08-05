@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warzone Loadouts</title>
+    <style>
+        body { background-color: #0e0e10; color: white; font-family: Arial, sans-serif; }
+        .loadout { margin: 10px; padding: 10px; border: 1px solid white; }
+    </style>
+</head>
+<body>
+    <div id="loadouts"></div>
+    <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
+    <script>
+        window.Twitch.ext.onAuthorized(function(auth) {
+            fetch('https://localhost:5000/get_loadouts', {
+                headers: {
+                    'Authorization': `Bearer ${auth.token}`
+                }
+            })
+            .then(response => response.json())
+            .then(loadouts => {
+                const loadoutsDiv = document.getElementById('loadouts');
+                loadoutsDiv.innerHTML = '';
+                for (const id in loadouts) {
+                    const loadout = loadouts[id];
+                    const loadoutDiv = document.createElement('div');
+                    loadoutDiv.className = 'loadout';
+                    loadoutDiv.innerHTML = `<strong>Primary:</strong> ${loadout.primary}<br><strong>Secondary:</strong> ${loadout.secondary}<br><strong>Perks:</strong> ${loadout.perks}`;
+                    loadoutsDiv.appendChild(loadoutDiv);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
