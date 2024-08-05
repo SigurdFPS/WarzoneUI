@@ -1,0 +1,19 @@
+{
+  "name": "Warzone Loadouts",
+  "description": "Create and manage Warzone loadouts",
+  "author_name": "Your Name",
+  "version": "0.0.1",
+  "asset_root": "https://localhost:8080",
+  "id": "your-extension-id",
+  "views": {
+    "panel": {
+      "viewer_url": "https://localhost:8080/viewer.html",
+      "height": 300
+    },
+    "config": {
+      "viewer_url": "https://localhost:8080/config.html",
+      "height": 300
+    }
+  },
+  "developer_email": "your-email@example.com"
+}
