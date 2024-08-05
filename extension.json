@@ -3,17 +3,17 @@
   "description": "Create and manage Warzone loadouts",
   "author_name": "SigurdWZ",
   "version": "0.0.1",
-  "asset_root": "https://localhost:8080",
-  "id": "3kfv655d9opnjgj3wf02t0i05x5v80",
+  "asset_root": "https://your-production-url.com",  // Replace with your actual asset URL
+  "id": "3kfv655d9opnjgj3wf02t0i05x5v80",  // Ensure this matches your Twitch Developer Dashboard ID
   "views": {
     "panel": {
-      "viewer_url": "https://localhost:8080/viewer.html",
+      "viewer_url": "https://your-production-url.com/viewer.html",  // Replace with your actual viewer URL
       "height": 300
     },
     "config": {
-      "viewer_url": "https://localhost:8080/config.html",
+      "viewer_url": "https://your-production-url.com/config.html",  // Replace with your actual config URL
       "height": 300
     }
   },
-  "developer_email": "thesigurdr@gmail.com"
+  "developer_email": "thesigurdr@gmail.com"  // Ensure this is your correct contact email
 }
