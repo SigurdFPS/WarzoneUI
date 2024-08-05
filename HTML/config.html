@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warzone Loadouts Config</title>
+    <style>
+        body { background-color: #0e0e10; color: white; font-family: Arial, sans-serif; }
+    </style>
+</head>
+<body>
+    <h1>Warzone Loadouts Configuration</h1>
+    <div id="config"></div>
+    <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
+    <script>
+        window.Twitch.ext.onAuthorized(function(auth) {
+            fetch('https://localhost:5000/get_loadouts', {
+                headers: {
+                    'Authorization': `Bearer ${auth.token}`
+                }
+            })
+            .then(response => response.json())
+            .then(loadouts => {
+                const configDiv = document.getElementById('config');
+                configDiv.innerHTML = JSON.stringify(loadouts, null, 2);
+            });
+        });
+    </script>
+</body>
+</html>
