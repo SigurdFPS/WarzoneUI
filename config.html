@@ -7,7 +7,7 @@
     <style>
         body { background-color: #0e0e10; color: white; font-family: Arial, sans-serif; }
         .loadout-form { margin-bottom: 20px; }
-        .loadout-form input, .loadout-form button { display: block; margin: 10px 0; }
+        .loadout-form select, .loadout-form input, .loadout-form button { display: block; margin: 10px 0; }
         .loadout { margin: 10px 0; padding: 10px; border: 1px solid white; }
         .loadout img { max-width: 100%; height: auto; }
         .perks { display: flex; gap: 10px; }
@@ -18,126 +18,197 @@
     <h1>Warzone Loadouts Configuration</h1>
     <div>
         <form id="loadoutForm" class="loadout-form">
-            <input type="text" id="primary" placeholder="Primary Weapon" required>
-            <input type="text" id="primaryImage" placeholder="Primary Weapon Image URL" required>
-            <input type="text" id="secondary" placeholder="Secondary Weapon" required>
-            <input type="text" id="secondaryImage" placeholder="Secondary Weapon Image URL" required>
-            <input type="text" id="perk1" placeholder="Perk 1 Name" required>
-            <input type="text" id="perk1Image" placeholder="Perk 1 Image URL" required>
-            <input type="text" id="perk2" placeholder="Perk 2 Name" required>
-            <input type="text" id="perk2Image" placeholder="Perk 2 Image URL" required>
-            <input type="text" id="perk3" placeholder="Perk 3 Name" required>
-            <input type="text" id="perk3Image" placeholder="Perk 3 Image URL" required>
+            <label for="primary">Primary Weapon:</label>
+            <select id="primary">
+                <!-- Options will be populated by JavaScript -->
+            </select>
+            <img id="primaryImage" src="" alt="Primary Weapon" style="display: none;">
+
+            <label for="secondary">Secondary Weapon:</label>
+            <select id="secondary">
+                <!-- Options will be populated by JavaScript -->
+            </select>
+            <img id="secondaryImage" src="" alt="Secondary Weapon" style="display: none;">
+
+            <label for="perk1">Perk 1:</label>
+            <select id="perk1">
+                <!-- Options will be populated by JavaScript -->
+            </select>
+            <img id="perk1Image" src="" alt="Perk 1" style="display: none;">
+
+            <label for="perk2">Perk 2:</label>
+            <select id="perk2">
+                <!-- Options will be populated by JavaScript -->
+            </select>
+            <img id="perk2Image" src="" alt="Perk 2" style="display: none;">
+
+            <label for="perk3">Perk 3:</label>
+            <select id="perk3">
+                <!-- Options will be populated by JavaScript -->
+            </select>
+            <img id="perk3Image" src="" alt="Perk 3" style="display: none;">
+
             <button type="submit">Create Loadout</button>
         </form>
     </div>
     <div id="loadouts"></div>
     <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
     <script>
-        window.Twitch.ext.onAuthorized(function(auth) {
-            fetchLoadouts();
+        /* ADD YOUR API LINKS HERE */
+        const API_URL = 'https://your-api-id.execute-api.your-region.amazonaws.com/your-stage';
+        const GUNS_API_URL = `${API_URL}/guns`;
+        const PERKS_API_URL = `${API_URL}/perks`;
 
-            document.getElementById('loadoutForm').addEventListener('submit', function(event) {
-                event.preventDefault();
-                const loadout = {
-                    primary: document.getElementById('primary').value,
-                    primaryImage: document.getElementById('primaryImage').value,
-                    secondary: document.getElementById('secondary').value,
-                    secondaryImage: document.getElementById('secondaryImage').value,
-                    perks: [
-                        { name: document.getElementById('perk1').value, image: document.getElementById('perk1Image').value },
-                        { name: document.getElementById('perk2').value, image: document.getElementById('perk2Image').value },
-                        { name: document.getElementById('perk3').value, image: document.getElementById('perk3Image').value }
-                    ]
-                };
-                fetch('https://your-backend-domain/create_loadout', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${auth.token}`
-                    },
-                    body: JSON.stringify(loadout)
-                }).then(response => response.json()).then(() => fetchLoadouts());
+        async function fetchData(url) {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        }
+
+        async function populateSelect(selectId, items) {
+            const select = document.getElementById(selectId);
+            select.innerHTML = '';
+            items.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.id;
+                option.textContent = item.name;
+                select.appendChild(option);
             });
-        });
 
-        function fetchLoadouts() {
-            fetch('https://your-backend-domain/get_loadouts', {
-                headers: {
-                    'Authorization': `Bearer ${window.Twitch.ext.viewer.opaqueId}`
+            select.addEventListener('change', function() {
+                const selectedItem = items.find(i => i.id === this.value);
+                document.getElementById(`${selectId}Image`).src = selectedItem ? selectedItem.image : '';
+                document.getElementById(`${selectId}Image`).style.display = selectedItem ? 'block' : 'none';
+            });
+        }
+
+        window.Twitch.ext.onAuthorized(async function(auth) {
+            try {
+                const guns = await fetchData(GUNS_API_URL);
+                const perks = await fetchData(PERKS_API_URL);
+
+                // Assuming guns object has primary and secondary categories
+                populateSelect('primary', guns.primary);
+                populateSelect('secondary', guns.secondary);
+                populateSelect('perk1', perks);
+                populateSelect('perk2', perks);
+                populateSelect('perk3', perks);
+
+                document.getElementById('loadoutForm').addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    const loadout = {
+                        primary: document.getElementById('primary').value,
+                        primaryImage: document.getElementById('primaryImage').src,
+                        secondary: document.getElementById('secondary').value,
+                        secondaryImage: document.getElementById('secondaryImage').src,
+                        perks: [
+                            { name: document.getElementById('perk1').options[document.getElementById('perk1').selectedIndex].text, image: document.getElementById('perk1Image').src },
+                            { name: document.getElementById('perk2').options[document.getElementById('perk2').selectedIndex].text, image: document.getElementById('perk2Image').src },
+                            { name: document.getElementById('perk3').options[document.getElementById('perk3').selectedIndex].text, image: document.getElementById('perk3Image').src }
+                        ]
+                    };
+                    fetch(`${API_URL}/create_loadout`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${auth.token}`
+                        },
+                        body: JSON.stringify(loadout)
+                    }).then(response => response.json()).then(() => fetchLoadouts(auth.token));
+                });
+
+                function fetchLoadouts(token) {
+                    fetch(`${API_URL}/get_loadouts`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(loadouts => {
+                        const loadoutsDiv = document.getElementById('loadouts');
+                        loadoutsDiv.innerHTML = '';
+                        for (const id in loadouts) {
+                            const loadout = loadouts[id];
+                            const loadoutDiv = document.createElement('div');
+                            loadoutDiv.className = 'loadout';
+                            loadoutDiv.innerHTML = `
+                                <h3>Loadout ${id}</h3>
+                                <p><strong>Primary:</strong></p>
+                                <img src="${loadout.primaryImage}" alt="${loadout.primary}">
+                                <p><strong>Secondary:</strong></p>
+                                <img src="${loadout.secondaryImage}" alt="${loadout.secondary}">
+                                <p><strong>Perks:</strong></p>
+                                <div class="perks">
+                                    ${loadout.perks.map(perk => `<img src="${perk.image}" alt="${perk.name}" title="${perk.name}">`).join('')}
+                                </div>
+                                <button onclick="editLoadout(${id}, '${token}')">Edit</button>
+                                <button onclick="deleteLoadout(${id}, '${token}')">Delete</button>
+                            `;
+                            loadoutsDiv.appendChild(loadoutDiv);
+                        }
+                    });
                 }
-            })
-            .then(response => response.json())
-            .then(loadouts => {
-                const loadoutsDiv = document.getElementById('loadouts');
-                loadoutsDiv.innerHTML = '';
-                for (const id in loadouts) {
+
+                function editLoadout(id, token) {
                     const loadout = loadouts[id];
-                    const loadoutDiv = document.createElement('div');
-                    loadoutDiv.className = 'loadout';
-                    loadoutDiv.innerHTML = `
-                        <h3>Loadout ${id}</h3>
-                        <p><strong>Primary:</strong></p>
-                        <img src="${loadout.primaryImage}" alt="${loadout.primary}">
-                        <p><strong>Secondary:</strong></p>
-                        <img src="${loadout.secondaryImage}" alt="${loadout.secondary}">
-                        <p><strong>Perks:</strong></p>
-                        <div class="perks">
-                            ${loadout.perks.map(perk => `<img src="${perk.image}" alt="${perk.name}" title="${perk.name}">`).join('')}
-                        </div>
-                        <button onclick="editLoadout(${id})">Edit</button>
-                        <button onclick="deleteLoadout(${id})">Delete</button>
-                    `;
-                    loadoutsDiv.appendChild(loadoutDiv);
+                    document.getElementById('primary').value = loadout.primary;
+                    document.getElementById('primaryImage').src = loadout.primaryImage;
+                    document.getElementById('primaryImage').style.display = 'block';
+                    document.getElementById('secondary').value = loadout.secondary;
+                    document.getElementById('secondaryImage').src = loadout.secondaryImage;
+                    document.getElementById('secondaryImage').style.display = 'block';
+                    const perks = loadout.perks.reduce((obj, perk) => {
+                        obj[perk.name] = perk.image;
+                        return obj;
+                    }, {});
+                    document.getElementById('perk1').value = loadout.perks[0].name;
+                    document.getElementById('perk1Image').src = perks[loadout.perks[0].name] || '';
+                    document.getElementById('perk1Image').style.display = 'block';
+                    document.getElementById('perk2').value = loadout.perks[1].name;
+                    document.getElementById('perk2Image').src = perks[loadout.perks[1].name] || '';
+                    document.getElementById('perk2Image').style.display = 'block';
+                    document.getElementById('perk3').value = loadout.perks[2].name;
+                    document.getElementById('perk3Image').src = perks[loadout.perks[2].name] || '';
+                    document.getElementById('perk3Image').style.display = 'block';
+
+                    document.getElementById('loadoutForm').onsubmit = function(event) {
+                        event.preventDefault();
+                        const updatedLoadout = {
+                            primary: document.getElementById('primary').value,
+                            primaryImage: document.getElementById('primaryImage').src,
+                            secondary: document.getElementById('secondary').value,
+                            secondaryImage: document.getElementById('secondaryImage').src,
+                            perks: [
+                                { name: document.getElementById('perk1').options[document.getElementById('perk1').selectedIndex].text, image: document.getElementById('perk1Image').src },
+                                { name: document.getElementById('perk2').options[document.getElementById('perk2').selectedIndex].text, image: document.getElementById('perk2Image').src },
+                                { name: document.getElementById('perk3').options[document.getElementById('perk3').selectedIndex].text, image: document.getElementById('perk3Image').src }
+                            ]
+                        };
+                        fetch(`${API_URL}/update_loadout/${id}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            },
+                            body: JSON.stringify(updatedLoadout)
+                        }).then(response => response.json()).then(() => fetchLoadouts(token));
+                    };
                 }
-            });
-        }
 
-        function editLoadout(id) {
-            const loadout = loadouts[id];
-            document.getElementById('primary').value = loadout.primary;
-            document.getElementById('primaryImage').value = loadout.primaryImage;
-            document.getElementById('secondary').value = loadout.secondary;
-            document.getElementById('secondaryImage').value = loadout.secondaryImage;
-            document.getElementById('perk1').value = loadout.perks[0].name;
-            document.getElementById('perk1Image').value = loadout.perks[0].image;
-            document.getElementById('perk2').value = loadout.perks[1].name;
-            document.getElementById('perk2Image').value = loadout.perks[1].image;
-            document.getElementById('perk3').value = loadout.perks[2].name;
-            document.getElementById('perk3Image').value = loadout.perks[2].image;
-
-            document.getElementById('loadoutForm').onsubmit = function(event) {
-                event.preventDefault();
-                const updatedLoadout = {
-                    primary: document.getElementById('primary').value,
-                    primaryImage: document.getElementById('primaryImage').value,
-                    secondary: document.getElementById('secondary').value,
-                    secondaryImage: document.getElementById('secondaryImage').value,
-                    perks: [
-                        { name: document.getElementById('perk1').value, image: document.getElementById('perk1Image').value },
-                        { name: document.getElementById('perk2').value, image: document.getElementById('perk2Image').value },
-                        { name: document.getElementById('perk3').value, image: document.getElementById('perk3Image').value }
-                    ]
-                };
-                fetch(`https://your-backend-domain/update_loadout/${id}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${window.Twitch.ext.viewer.opaqueId}`
-                    },
-                    body: JSON.stringify(updatedLoadout)
-                }).then(response => response.json()).then(() => fetchLoadouts());
-            };
-        }
-
-        function deleteLoadout(id) {
-            fetch(`https://your-backend-domain/delete_loadout/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${window.Twitch.ext.viewer.opaqueId}`
+                function deleteLoadout(id, token) {
+                    fetch(`${API_URL}/delete_loadout/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    }).then(response => response.json()).then(() => fetchLoadouts(token));
                 }
-            }).then(response => response.json()).then(() => fetchLoadouts());
-        }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        });
     </script>
 </body>
 </html>
