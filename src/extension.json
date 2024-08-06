@@ -1,0 +1,19 @@
+{
+  "name": "Warzone Loadouts",
+  "description": "Create and manage Warzone loadouts",
+  "author_name": "SigurdWZ",
+  "version": "0.0.1",
+  "asset_root": "https://your-production-url.com",  // Replace with your actual asset URL
+  "id": "hzx6kp7pfladrlz7uvgdxbcy460fch",  // Ensure this matches your Twitch Developer Dashboard ID
+  "views": {
+    "panel": {
+      "viewer_url": "https://warzoneuibucket.s3.amazonaws.com/index.html",  // Replace with your actual viewer URL
+      "height": 300
+    },
+    "config": {
+      "viewer_url": "https://warzoneuibucket.s3.amazonaws.com/config.html",  // Replace with your actual config URL
+      "height": 300
+    }
+  },
+  "developer_email": "thesigurdr@gmail.com"  // Ensure this is your correct contact email
+}
