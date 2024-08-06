@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warzone Loadouts</title>
+    <style>
+        body { background-color: #0e0e10; color: white; font-family: Arial, sans-serif; }
+        .loadout { margin: 10px; padding: 10px; border: 1px solid white; display: flex; flex-direction: column; align-items: center; }
+        .loadout img { max-width: 100%; height: auto; }
+        .perks { display: flex; gap: 10px; }
+        .perks img { width: 50px; height: 50px; }
+    </style>
+</head>
+<body>
+    <h1>Warzone Loadouts</h1>
+    <div id="loadouts"></div>
+    <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
+    <script>
+        window.Twitch.ext.onAuthorized(function(auth) {
+            fetch('https://your-backend-domain/get_loadouts', {
+                headers: {
+                    'Authorization': `Bearer ${auth.token}`
+                }
+            })
+            .then(response => response.json())
+            .then(loadouts => {
+                const loadoutsDiv = document.getElementById('loadouts');
+                loadoutsDiv.innerHTML = '';
+                for (const id in loadouts) {
+                    const loadout = loadouts[id];
+                    const loadoutDiv = document.createElement('div');
+                    loadoutDiv.className = 'loadout';
+                    loadoutDiv.innerHTML = `
+                        <h3>Loadout ${id}</h3>
+                        <p><strong>Primary:</strong></p>
+                        <img src="${loadout.primaryImage}" alt="${loadout.primary}">
+                        <p><strong>Secondary:</strong></p>
+                        <img src="${loadout.secondaryImage}" alt="${loadout.secondary}">
+                        <p><strong>Perks:</strong></p>
+                        <div class="perks">
+                            ${loadout.perks.map(perk => `<img src="${perk.image}" alt="${perk.name}" title="${perk.name}">`).join('')}
+                        </div>
+                    `;
+                    loadoutsDiv.appendChild(loadoutDiv);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
