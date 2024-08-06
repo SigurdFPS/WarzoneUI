@@ -19,39 +19,27 @@
     <div>
         <form id="loadoutForm" class="loadout-form">
             <label for="primary">Primary Weapon:</label>
-            <select id="primary">
-                <!-- Options will be populated by JavaScript -->
-            </select>
+            <select id="primary"></select>
             <img id="primaryImage" src="" alt="Primary Weapon" style="display: none;">
 
             <label for="secondary">Secondary Weapon:</label>
-            <select id="secondary">
-                <!-- Options will be populated by JavaScript -->
-            </select>
+            <select id="secondary"></select>
             <img id="secondaryImage" src="" alt="Secondary Weapon" style="display: none;">
 
             <label for="perk1">Perk 1:</label>
-            <select id="perk1">
-                <!-- Options will be populated by JavaScript -->
-            </select>
+            <select id="perk1"></select>
             <img id="perk1Image" src="" alt="Perk 1" style="display: none;">
             
             <label for="perk2">Perk 2:</label>
-            <select id="perk2">
-                <!-- Options will be populated by JavaScript -->
-            </select>
+            <select id="perk2"></select>
             <img id="perk2Image" src="" alt="Perk 2" style="display: none;">
 
             <label for="perk3">Perk 3:</label>
-            <select id="perk3">
-                <!-- Options will be populated by JavaScript -->
-            </select>
+            <select id="perk3"></select>
             <img id="perk3Image" src="" alt="Perk 3" style="display: none;">
 
             <label for="perk4">Perk 4:</label>
-            <select id="perk4">
-                <!-- Options will be populated by JavaScript -->
-            </select>
+            <select id="perk4"></select>
             <img id="perk4Image" src="" alt="Perk 4" style="display: none;">
 
             <button type="submit">Create Loadout</button>
@@ -60,15 +48,19 @@
     <div id="loadouts"></div>
     <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
     <script>
-        /* ADD YOUR API LINKS HERE */
         const API_URL = 'https://1csu9el123.execute-api.us-east-1.amazonaws.com/Prod';
         const GUNS_API_URL = `${API_URL}/guns`;
         const PERKS_API_URL = `${API_URL}/perks`;
         const LOADOUTS_API_URL = `${API_URL}/loadouts`;
 
         async function fetchData(url) {
-            const response = await fetch(url);
+            const response = await fetch(url, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
             if (!response.ok) {
+                console.error('Fetch error: ', response.statusText);
                 throw new Error('Network response was not ok');
             }
             return response.json();
@@ -86,8 +78,13 @@
 
             select.addEventListener('change', function() {
                 const selectedItem = items.find(i => i.id === this.value);
-                document.getElementById(`${selectId}Image`).src = selectedItem ? selectedItem.image : '';
-                document.getElementById(`${selectId}Image`).style.display = selectedItem ? 'block' : 'none';
+                const imgElement = document.getElementById(`${selectId}Image`);
+                if (selectedItem && selectedItem.image) {
+                    imgElement.src = selectedItem.image;
+                    imgElement.style.display = 'block';
+                } else {
+                    imgElement.style.display = 'none';
+                }
             });
         }
 
@@ -96,15 +93,14 @@
                 const guns = await fetchData(GUNS_API_URL);
                 const perks = await fetchData(PERKS_API_URL);
 
-                // Assuming guns object has primary and secondary categories
-                populateSelect('primary', guns.primary);
-                populateSelect('secondary', guns.secondary);
+                populateSelect('primary', guns);
+                populateSelect('secondary', guns);
                 populateSelect('perk1', perks);
                 populateSelect('perk2', perks);
                 populateSelect('perk3', perks);
                 populateSelect('perk4', perks);
 
-                document.getElementById('loadoutForm').addEventListener('submit', function(event) {
+                document.getElementById('loadoutForm').addEventListener('submit', async function(event) {
                     event.preventDefault();
                     const loadout = {
                         primary: document.getElementById('primary').value,
@@ -118,18 +114,19 @@
                             { name: document.getElementById('perk4').options[document.getElementById('perk4').selectedIndex].text, image: document.getElementById('perk4Image').src }
                         ]
                     };
-                    fetch(`${API_URL}/create_loadout`, {
+                    await fetch(`${LOADOUTS_API_URL}`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${auth.token}`
                         },
                         body: JSON.stringify(loadout)
-                    }).then(response => response.json()).then(() => fetchLoadouts(auth.token));
+                    });
+                    fetchLoadouts(auth.token);
                 });
 
                 function fetchLoadouts(token) {
-                    fetch(`${API_URL}/get_loadouts`, {
+                    fetch(`${LOADOUTS_API_URL}`, {
                         headers: {
                             'Authorization': `Bearer ${token}`
                         }
@@ -168,6 +165,7 @@
                     document.getElementById('secondary').value = loadout.secondary;
                     document.getElementById('secondaryImage').src = loadout.secondaryImage;
                     document.getElementById('secondaryImage').style.display = 'block';
+
                     const perks = loadout.perks.reduce((obj, perk) => {
                         obj[perk.name] = perk.image;
                         return obj;
@@ -185,7 +183,7 @@
                     document.getElementById('perk4Image').src = perks[loadout.perks[3].name] || '';
                     document.getElementById('perk4Image').style.display = 'block';
 
-                    document.getElementById('loadoutForm').onsubmit = function(event) {
+                    document.getElementById('loadoutForm').onsubmit = async function(event) {
                         event.preventDefault();
                         const updatedLoadout = {
                             primary: document.getElementById('primary').value,
@@ -199,24 +197,25 @@
                                 { name: document.getElementById('perk4').options[document.getElementById('perk4').selectedIndex].text, image: document.getElementById('perk4Image').src }
                             ]
                         };
-                        fetch(`${API_URL}/update_loadout/${id}`, {
+                        await fetch(`${LOADOUTS_API_URL}/${id}`, {
                             method: 'PUT',
                             headers: {
                                 'Content-Type': 'application/json',
                                 'Authorization': `Bearer ${token}`
                             },
                             body: JSON.stringify(updatedLoadout)
-                        }).then(response => response.json()).then(() => fetchLoadouts(token));
+                        });
+                        fetchLoadouts(token);
                     };
                 }
 
                 function deleteLoadout(id, token) {
-                    fetch(`${API_URL}/delete_loadout/${id}`, {
+                    fetch(`${LOADOUTS_API_URL}/${id}`, {
                         method: 'DELETE',
                         headers: {
                             'Authorization': `Bearer ${token}`
                         }
-                    }).then(response => response.json()).then(() => fetchLoadouts(token));
+                    }).then(() => fetchLoadouts(token));
                 }
             } catch (error) {
                 console.error('Error fetching data:', error);
