@@ -1,62 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Warzone Loadouts Viewer</title>
-    <style>
-        body { background-color: #0e0e10; color: white; font-family: Arial, sans-serif; }
-        .loadout { margin: 10px 0; padding: 10px; border: 1px solid white; }
-        .loadout img { max-width: 100%; height: auto; }
-        .perks { display: flex; gap: 10px; }
-        .perks img { width: 50px; height: 50px; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Warzone Loadouts Viewer</title>
+  <link rel="icon" href="favicon.ico">
+  <style>
+    body {
+      background-color: #0e0e10;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+    .loadout {
+      margin: 10px 0;
+      padding: 10px;
+      border: 1px solid white;
+    }
+    .loadout img {
+      max-width: 100%;
+      height: auto;
+    }
+    .perks {
+      display: flex;
+      gap: 10px;
+    }
+    .perks img {
+      width: 50px;
+      height: 50px;
+    }
+  </style>
 </head>
 <body>
-    <h1>Warzone Loadouts</h1>
-    <div id="loadouts"></div>
-    <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
-    <script>
-        const API_URL = 'https://1csu9el123.execute-api.us-east-1.amazonaws.com/Prod';
-        const LOADOUTS_API_URL = `${API_URL}/loadouts`;
-
-        window.Twitch.ext.onAuthorized(async function(auth) {
-            try {
-                const response = await fetch(LOADOUTS_API_URL, {
-                    headers: {
-                        'Authorization': `Bearer ${auth.token}`
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-
-                const loadouts = await response.json();
-                const loadoutsDiv = document.getElementById('loadouts');
-                loadoutsDiv.innerHTML = '';
-
-                for (const id in loadouts) {
-                    const loadout = loadouts[id];
-                    const loadoutDiv = document.createElement('div');
-                    loadoutDiv.className = 'loadout';
-                    loadoutDiv.innerHTML = `
-                        <h3>Loadout ${id}</h3>
-                        <p><strong>Primary:</strong></p>
-                        <img src="${loadout.primaryImage}" alt="${loadout.primary}">
-                        <p><strong>Secondary:</strong></p>
-                        <img src="${loadout.secondaryImage}" alt="${loadout.secondary}">
-                        <p><strong>Perks:</strong></p>
-                        <div class="perks">
-                            ${loadout.perks.map(perk => `<img src="${perk.image}" alt="${perk.name}" title="${perk.name}">`).join('')}
-                        </div>
-                    `;
-                    loadoutsDiv.appendChild(loadoutDiv);
-                }
-            } catch (error) {
-                console.error('Error fetching loadouts:', error);
-            }
-        });
-    </script>
+  <div id="root"></div>
+  <script src="bundle.js"></script>
 </body>
 </html>
