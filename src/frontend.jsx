@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 
-const API_URL = 'https://1csu9el123.execute-api.us-east-1.amazonaws.com/Prod';
+const API_URL = 'API_URL_HERE';
 const GUNS_API_URL = `${API_URL}/guns`;
 const PERKS_API_URL = `${API_URL}/perks`;
 const LOADOUTS_API_URL = `${API_URL}/loadouts`;
