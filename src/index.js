@@ -8,8 +8,8 @@ const dynamoDb = new AWS.DynamoDB.DocumentClient();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const CLIENT_ID = 'hzx6kp7pfladrlz7uvgdxbcy460fch';
-const CLIENT_SECRET = 'sxSgPmb2ax/Xx14/lfdtkaxmiHd3hQaEzq8lmVD6Iac=';
+const CLIENT_ID = 'CLIENT_ID_HERE';
+const CLIENT_SECRET = 'CLIENT_SECRET_HERE';
 const REDIRECT_URI = 'https://hzx6kp7pfladrlz7uvgdxbcy460fch.ext-twitch.tv/';
 
 const tableNameGuns = 'Guns';
