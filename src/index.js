@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 3000;
 
 const CLIENT_ID = 'CLIENT_ID_HERE';
 const CLIENT_SECRET = 'CLIENT_SECRET_HERE';
-const REDIRECT_URI = 'https://hzx6kp7pfladrlz7uvgdxbcy460fch.ext-twitch.tv/';
+const REDIRECT_URI = 'REDIRECT_URI_HERE';
 
 const tableNameGuns = 'Guns';
 const tableNamePerks = 'Perks';
